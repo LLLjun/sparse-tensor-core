@@ -22,9 +22,9 @@
 
 module tb_core();
 
-parameter N_GROUP = 4;
-parameter N_UNIT = 4;
-parameter N_MUL = 4;
+parameter N_GROUP = 16;
+parameter N_UNIT = 16;
+parameter N_MUL = 16;
 parameter DW_MUL = 8;
 parameter DW_ADD = 32;
 parameter DW_CORE_IN_A = DW_MUL * N_MUL * N_GROUP;
@@ -32,11 +32,11 @@ parameter DW_CORE_IN_B = DW_MUL * N_MUL * N_UNIT;
 parameter DW_CORE_OUT = DW_ADD * N_UNIT * N_GROUP;
 parameter DW_UNIT_IN = DW_MUL * N_MUL;
 
-parameter FILE_PATH_A = "../../../test_file/matrix_a.txt";
-parameter FILE_PATH_B = "../../../test_file/matrix_b.txt";
-parameter FILE_PATH_S = "../../../test_file/matrix_s.txt";
+parameter FILE_PATH_A = "D:/sparse-tensor-core/test_file/matrix_multiple/matrix_a.txt";
+parameter FILE_PATH_B = "D:/sparse-tensor-core/test_file/matrix_multiple/matrix_b.txt";
+parameter FILE_PATH_S = "D:/sparse-tensor-core/test_file/matrix_multiple/matrix_s.txt";
 
-integer i;
+integer i, tmp;
 integer file_a, file_b, file_s;
 
 reg sys_clk;
@@ -60,7 +60,7 @@ generate
   end
 endgenerate
 
-//信号初始化
+
 initial begin
   sys_clk = 1'b1;
   reset   = 1'b0;
@@ -72,27 +72,25 @@ initial begin
   // load file
   file_a = $fopen(FILE_PATH_A, "r");
   for (i=0; i<N_GROUP*N_MUL; i=i+1) begin
-    $fscanf(file_a, "%d", A_matrix[i]);
+    tmp = $fscanf(file_a, "%d", A_matrix[i]);
     IN_A[i*DW_MUL+:DW_MUL] = A_matrix[i];
   end
   $fclose(file_a);
   file_b = $fopen(FILE_PATH_B, "r");
   for (i=0; i<N_UNIT*N_MUL; i=i+1) begin
-    $fscanf(file_b, "%d", B_matrix[i]);
+    tmp = $fscanf(file_b, "%d", B_matrix[i]);
     IN_B[i*DW_MUL+:DW_MUL] = B_matrix[i];
   end
   $fclose(file_b);
   file_s = $fopen(FILE_PATH_S, "r");
   for (i=0; i<N_GROUP*N_UNIT; i=i+1) begin
-    $fscanf(file_s, "%d", S_matrix[i]);
+    tmp = $fscanf(file_s, "%d", S_matrix[i]);
   end
   $fclose(file_s);
 
-
-
 end
 
-//生成时钟
+
 always #5 sys_clk = ~sys_clk;
 initial begin
   #10
@@ -108,7 +106,7 @@ initial begin
 
 end
 
-//例化待测设计
+
 core #(
   .N_GROUP(N_GROUP),
   .N_UNIT(N_UNIT),
