@@ -2,7 +2,7 @@
 
 module dn_benes 
 #(
-    parameter N = 64,
+    parameter N = 32,
     parameter DW_DATA = 8,
     parameter N_LEVELS = 2*$clog2(N)-1) 
 (
@@ -64,7 +64,7 @@ module dn_benes
                     .reset(reset),
                     .set_en(set_en),
                     .route_en(route_en),
-                    .route_signal(route_signals[l*N/2+j]),
+                    .route_signal(route_signals[level*N+(pos+1)*2-1 -:2]),
                     .in({reg_in[(level*N+2*pos+1)*DW_DATA-1 -:DW_DATA], reg_in[(level*N+2*pos+2)*DW_DATA-1 -:DW_DATA]}),
                     .out({wire_out[(level*N+2*pos+1)*DW_DATA-1 -:DW_DATA], wire_out[(level*N+2*pos+2)*DW_DATA-1 -:DW_DATA]})
                 );
