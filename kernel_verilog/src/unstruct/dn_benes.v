@@ -15,59 +15,56 @@ module dn_benes
     output [DW_DATA-1:0] out [N-1:0]
 );
 
-    wire [DW_DATA-1:0] wire_conn [(N_LEVELS+1)*N-1:0];
+    wire [DW_DATA-1:0] wire_in [N_LEVELS*N-1:0];
+    wire [DW_DATA-1:0] wire_out [N_LEVELS*N-1:0];
 
-    integer k;
-    for (k=0; k<N; k++) begin
-        wire_conn[k] <= in[k];
-        out[k] <= wire_conn[N_LEVELS*N+k];
+    integer i, j, mid, l;
+
+    // set input connections
+    i = 0
+    for (j=0; j<N; j++) begin
+        assign wire_in[i*N+j] = in[j];
     end
 
-    genvar i, j;
-    integer mid = N_LEVELS / 2, l;
-    generate
-        l = mid;
-        for (j=0; j<N/2; j++) begin: u_dn_router
-            dn_router #(
-                .DW_DATA(DW_DATA)
-            ) dp_router_inst_up (
-                .clk(clk),
-                .reset(reset),
-                .set_en(set_en),
-                .route_en(route_en),
-                .route_signal(route_signals[l*N/2+j]),
-                .in('{wire_conn[l*N+i], wire_conn[l*N+(i/2)*2+i%2]}),
-                .out('{wire_conn[(l+1)*N+i], wire_conn[(l+1)*N+(i/2)*2+i%2]})
-            );
+    // set output connections
+    i = N_LEVELS - 1;
+    for (j=0; j<N; j++) begin
+        assign out[j] = wire_out[i*N+j];
+    end
+
+    // set inter connections
+    mid = N_LEVELS/2;
+    for (i=0; i<N_LEVELS/2; i++) begin
+        // set the left part
+        l = mid - i - 1;
+        for (j=0; j<N; j++) begin
+            assign wire_in[(l+1)*N + j] = wire_out[l*N + (j+2**i)%2**(i+1) + j/(2**(i+1))*(2**(i+1))];
         end
-        for (i=1; i<=N_LEVELS/2; i++) begin: each_level
-            for (j=0; j<N/2; j++) begin: u_dn_router
-                l = mid - i;
+        // set the right part
+        l = mid + i;
+        for (j=0; j<N; j++) begin
+            assign wire_in[(l+1)*N + j] = wire_out[l*N + (j+2**i)%2**(i+1) + j/(2**(i+1))*(2**(i+1))];
+        end
+    end
+
+    // generate router layers 
+    genvar x, y;
+    generate
+        for (x=0; x<N_LEVELS; x++) begin
+            for (y=0; y<N; y++) begin
                 dn_router #(
                     .DW_DATA(DW_DATA)
-                ) dp_router_inst_up (
+                ) u_dn_router(
                     .clk(clk),
                     .reset(reset),
                     .set_en(set_en),
                     .route_en(route_en),
                     .route_signal(route_signals[l*N/2+j]),
-                    .in('{wire_conn[l*N+i], wire_conn[l*N+((i/2**l)*2**l+(i+2**(l-1))%2**l)]}),
-                    .out('{wire_conn[(l+1)*N+i], wire_conn[(l+1)*N+((i/2**(l+1)))*2**(l+1)+(i+2**l)%2**(l+1))]}) 
-                );
-                // might be bug for the edge
-                l = mid + i;
-                dn_router #(
-                    .DW_DATA(DW_DATA)
-                ) dp_router_inst_up (
-                    .clk(clk),
-                    .reset(reset),
-                    .set_en(set_en),
-                    .route_en(route_en),
-                    .route_signal(route_signals[l*N/2+j]),
-                    .in('{wire_conn[(l+1)*N+i], wire_conn[(l+1)*N+((i/2**(l+1)))*2**(l+1)+(i+2**l)%2**(l+1))]}),
-                    .out('{wire_conn[l*N+i], wire_conn[l*N+((i/2**l)*2**l+(i+2**(l-1))%2**l)]})
-                );
+                    .in('{wire_in[x*N+y], wire_in[x*N+y+1]}),
+                    .out('{wire_out[x*N+y], wire_out[x*N+y+1]})
+                )
             end
         end
     endgenerate
+
 endmodule
