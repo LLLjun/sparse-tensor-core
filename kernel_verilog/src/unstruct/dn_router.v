@@ -16,8 +16,8 @@ module dn_router
     reg [DW_DATA-1:0] reg_out_left, reg_out_right;
     always @(posedge clk) begin
         if (reset) begin: reset_block
-            reg_out_left <= in[0];
-            reg_out_right <= in[1];
+            reg_out_left <= in[DW_DATA-1:0];
+            reg_out_right <= in[2*DW_DATA-1:DW_DATA];
         end
         else if (set_en) begin: set_block
             // set left out
@@ -35,10 +35,10 @@ module dn_router
                 reg_out_right <= in[DW_DATA-1:0];
             end
         end
-        else if (~route_en) begin: route_block
-            reg_out_left <= 0;
-            reg_out_right <= 0;
-        end
+        //else if (~route_en) begin: route_block
+        //    reg_out_left <= 1;
+        //    reg_out_right <= 1;
+        //end
     end
 
     assign out = {reg_out_left, reg_out_right};
