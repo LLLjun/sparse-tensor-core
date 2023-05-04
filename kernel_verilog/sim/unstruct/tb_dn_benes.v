@@ -55,4 +55,6 @@ dn_benes #(
     .out(out)
 );
 
+//TODO: bug to fix: might be delay due to latches
+
 endmodule
