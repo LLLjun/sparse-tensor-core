@@ -14,10 +14,10 @@ module reduction_mux
 
     reg [SEL_IN-1:0] SEL_LEFT, SEL_RIGHT;
     always @(*) begin
-        SEL_LEFT <= sel[2*SEL_IN-1 -:SEL_IN];
-        SEL_RIGHT <= sel[SEL_IN-1 -:SEL_IN]; 
+        SEL_RIGHT <= sel[2*SEL_IN-1 -:SEL_IN];
+        SEL_LEFT <= sel[SEL_IN-1 -:SEL_IN]; 
     end
     
-    assign out = {in[(SEL_LEFT+1)*DW_DATA-1 -:DW_DATA], in[(SEL_RIGHT+1)*DW_DATA-1 -:DW_DATA]};
+    assign out = {in[(SEL_RIGHT+1)*DW_DATA-1 -:DW_DATA], in[(SEL_LEFT+1)*DW_DATA-1 -:DW_DATA]};
 
 endmodule
