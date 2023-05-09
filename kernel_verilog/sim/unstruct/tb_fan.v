@@ -9,6 +9,8 @@ reg [N_ADDERS-1:0] add_en;
 reg [N_ADDERS-1:0] bypass_en;
 reg [6*N_ADDERS-1:0] sel;
 reg [DW_DATA*N-1:0] in;
+reg [2*N-1:0] edge_tag_in;
+wire [2*N_ADDERS-1:0] out_valid;
 wire [DW_DATA*2*N_ADDERS-1:0] out;
 
 initial begin
@@ -16,6 +18,7 @@ initial begin
     add_en    = 31'b1111111011111111110111011111011;
     bypass_en = 31'b0000000000000000001000100000100;
     sel = {3'd1, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd3, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd3, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd3, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd6, 3'd2, 3'd1, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd2, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd3, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0, 3'd3, 3'd1, 3'd1, 3'd0, 3'd1, 3'd0, 3'd1, 3'd0};
+    edge_tag_in = {8'b10000000, 8'b00000001, 8'b10000000, 8'b00000000, 8'b00000110, 8'b00000110, 8'b00000000, 8'b01100001};
     #60 $finish;
 end
 
@@ -27,6 +30,8 @@ fan_tree #(
     .bypass_en(bypass_en),
     .sel(sel),
     .in(in),
+    .edge_tag_in(edge_tag_in),
+    .out_valid(out_valid),
     .out(out)
 );
 
