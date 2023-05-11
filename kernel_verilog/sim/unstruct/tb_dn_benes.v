@@ -18,8 +18,8 @@ initial begin
     reset = 1'b0;
     set_en = 1'b0;
     route_en = 1'b0;
-    route_signals = 40'b10100101_10011001_10101010_10011001_10100101;
-    in = {8'd1, 8'd2, 8'd3, 8'd4, 8'd5, 8'd6, 8'd7, 8'd8};
+    route_signals = 40'b01011010_00111010_01011000_01100100_00000110;
+    in = {8'd7, 8'd6, 8'd5, 8'd4, 8'd3, 8'd2, 8'd1, 8'd0};
 end
 
 always #5 sys_clk = ~sys_clk;
