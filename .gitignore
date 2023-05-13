@@ -1,2 +1,8 @@
 test_file/
 build/
+datasets/
+.vscode/
+
+# python
+*.pyc
+*.pkl
