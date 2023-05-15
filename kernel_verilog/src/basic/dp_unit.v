@@ -24,7 +24,7 @@
 
 module dp_unit
 #(parameter N_MUL = 4,
-  parameter DW_MUL = 8, DW_ADD = 32,
+  parameter DW_MUL = 32, DW_ADD = 32,
 
   parameter DW_IN = DW_MUL * N_MUL)
 (

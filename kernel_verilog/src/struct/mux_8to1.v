@@ -11,9 +11,11 @@ module mux_8to1
 
 wire signed [DW_DATA-1:0] in_data [7:0];
 genvar gi;
-for (gi=0; gi<8; gi=gi+1) begin
-  assign in_data[gi] = in[gi*DW_DATA+:DW_DATA];
-end
+generate
+  for (gi=0; gi<8; gi=gi+1) begin
+    assign in_data[gi] = in[gi*DW_DATA+:DW_DATA];
+  end
+endgenerate
 
 always @(posedge rst or posedge clk) begin
   if (rst) begin : init_block

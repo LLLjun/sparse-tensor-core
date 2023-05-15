@@ -99,8 +99,8 @@ class TaylorTensorCore(object):
     return total_cycle, total_cycle_computation, total_cycle_write_psum
 
 def DataLoaderCNN():
-  name = '64_3_3_3'
-  task_block_size = (16, 16)
+  name = '256_128_3_3'
+  task_block_size = (16, 16, 16)
   path_file = 'datasets/ICCAD23_FBS'
   path_matrix = os.path.join(path_file, 'weight_' + name + '.npy')
   path_block_type = os.path.join(path_file, 'sp_opt_' + name + '.npy')
@@ -111,16 +111,20 @@ def DataLoaderCNN():
   print('[DataLoaderCNN] matrix size: ', matrix.shape)
 
   task = OrderedDict({'m_size': matrix.shape[0], 'k_size': matrix.shape[1], 'm_tile': task_block_size[0], 'k_tile': task_block_size[1]})
+  task['k_sub_tile'] = task_block_size[2]
   task['m_iter'] = int(np.ceil(task['m_size'] / task['m_tile']))
   task['k_iter'] = int(np.ceil(task['k_size'] / task['k_tile']))
   task['block_type'] = list(2 * block_type.astype(np.int32).flatten())
-  print('Matrix sparsity: %.2f, Task sparsity: %.2f'%(FBS.get_matrix_density(matrix), FBS.get_task_density(task)))
+  mtx_density = FBS.get_matrix_density(matrix)
+  task_density = FBS.get_task_density(task)
+  print('Matrix density: %.2f, Task density: %.2f, up: %.1f'\
+        %(mtx_density, task_density, task_density/mtx_density))
     
   return task
 
 def DataLoaderGNN():
-  name = 'cora_X'
-  task_block_size = (16, 16, 16)
+  name = 'cora_A'
+  task_block_size = (16, 16, 8)
   path_file = 'datasets/GNN'
   path_matrix = os.path.join(path_file, name + '.npy')
   
@@ -167,10 +171,10 @@ def main():
   # print('[Load task] from %s'%path_task)
   
   # load task for datasets: CNN
-  # task = DataLoaderCNN()
+  task = DataLoaderCNN()
   
   # load task for datasets: GNN
-  task = DataLoaderGNN()
+  # task = DataLoaderGNN()
   
   test_demo(task)
   
