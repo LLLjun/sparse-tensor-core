@@ -2,6 +2,7 @@ test_file/
 build/
 datasets/
 .vscode/
+project_1/
 
 # python
 *.pyc
