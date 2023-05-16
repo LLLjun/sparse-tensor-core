@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 
-module core #(
+module stc_core #(
     parameter N_UNIT = 32,
     parameter N_ADDERS = N_UNIT - 1,
     parameter N_BUSLINE = 2*N_ADDERS,
-    parameter TILE_K = 16,
-    parameter DW_DATA = 8,
+    parameter TILE_K = 8,
+    parameter DW_DATA = 32,
     parameter N_LEVELS = 2*$clog2(N_UNIT)-1
 ) (
     input clk,
