@@ -37,6 +37,8 @@ module stc_core #(
             reg_in_dn <= 0;
         end
         else if (enable) begin
+            reg_in_a <= wire_dn_out;
+            reg_in_b <= wire_dn_out;
             if (in_valid[1]) begin
                 reg_in_dn <= in_a;
             end
@@ -49,11 +51,11 @@ module stc_core #(
         end
     end
 
-    always @(*) begin
-        reg_in_a <= wire_dn_out;
-        reg_in_b <= wire_dn_out;
-        //reg_in_dn <= 0;
-    end
+    // always @(*) begin
+    //     reg_in_a <= wire_dn_out;
+    //     reg_in_b <= wire_dn_out;
+    //     //reg_in_dn <= 0;
+    // end
     
     dn_benes #(
         .N(N_UNIT),

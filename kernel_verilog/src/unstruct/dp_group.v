@@ -5,7 +5,7 @@
 
 module dp_group #(
   parameter N_UNIT = 32,
-  parameter DW_DATA = 8
+  parameter DW_DATA = 32
 )(
   input clk,
   input reset,
