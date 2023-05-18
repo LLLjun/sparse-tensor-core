@@ -17,14 +17,18 @@ module dtc_pe
   integer i;
 
   reg signed [DW_ADD-1:0] reg_multiplier_o [N_MUL-1:0];
+  wire [DW_ADD-1:0] reg_multi_result [N_MUL-1:0];
   wire signed [DW_MUL-1:0] in_a_wire [N_MUL-1:0];
   wire signed [DW_MUL-1:0] in_b_wire [N_MUL-1:0];
   wire signed [DW_ADD*N_MUL-1:0] multiplier_o;
+  wire [N_MUL-1:0] s_axis_a_tready, s_axis_b_tready, m_axis_result_tvalid;
 
   genvar gi;
   generate
     for (gi=0; gi<N_MUL; gi=gi+1) begin
       assign multiplier_o[DW_ADD*gi+: DW_ADD] = reg_multiplier_o[gi];
+      assign in_a_wire[gi] =  in_a[DW_ADD*gi+: DW_ADD];
+      assign in_b_wire[gi] =  in_b[DW_ADD*gi+: DW_ADD];
     end
   endgenerate
 
@@ -37,10 +41,31 @@ module dtc_pe
     else begin : excute_block
       // @xiahao: use DSP IP, FP32*FP32->FP32
       for (i=0; i<N_MUL; i=i+1) begin
-        reg_multiplier_o[i] <= in_a_wire[i] * in_b_wire[i];
+        // reg_multiplier_o[i] <= in_a_wire[i] * in_b_wire[i];
+        reg_multiplier_o[i] <= reg_multi_result[i];
       end
     end
   end
+
+  generate
+    for (gi=0; gi<N_MUL; gi=gi+1) begin: u_fp_mux
+      floating_point_0 u_floating_point (
+        .aclk(clk),                                  // input wire aclk
+      //  .aresetn(aresetn),                            // input wire aresetn(active low)
+        .s_axis_a_tvalid(1'b1),            // input wire s_axis_a_tvalid
+        .s_axis_a_tready(s_axis_a_tready[gi]),
+        .s_axis_a_tdata(in_a_wire[gi]),              // input wire [31 : 0] s_axis_a_tdata
+      
+        .s_axis_b_tvalid(1'b1),            // input wire s_axis_b_tvalid
+        .s_axis_b_tready(s_axis_b_tready[gi]),
+        .s_axis_b_tdata(in_b_wire[gi]),              // input wire [31 : 0] s_axis_b_tdata
+      
+        .m_axis_result_tready(1'b1),            // input wire s_axis_c_tvalid
+        .m_axis_result_tvalid(m_axis_result_tvalid[gi]),
+        .m_axis_result_tdata(reg_multi_result[gi])           // input wire [31 : 0] s_axis_c_tdata
+      );
+    end
+  endgenerate
 
   adder_tree_fp32 #(
     .NUM_IN(8)

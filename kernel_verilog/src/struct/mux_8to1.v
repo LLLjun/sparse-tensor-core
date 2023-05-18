@@ -1,5 +1,5 @@
 module mux_8to1
-#(parameter DW_DATA = 16)
+#(parameter DW_DATA = 32*4)
 (
   input                             clk,
   input                             rst,

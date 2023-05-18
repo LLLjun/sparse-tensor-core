@@ -21,7 +21,7 @@
 
 
 module delay_unit
-#(parameter DW_DATA = 8,
+#(parameter DW_DATA = 32,
   parameter W_SHIFT = 5,
   parameter DW_INT  = 32)
 (

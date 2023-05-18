@@ -2,8 +2,8 @@
 
 module dn_benes 
 #(
-    parameter N = 8,
-    parameter DW_DATA = 8,
+    parameter N = 32,
+    parameter DW_DATA = 32,
     parameter N_LEVELS = 2*$clog2(N)-1) 
 (
     input clk,

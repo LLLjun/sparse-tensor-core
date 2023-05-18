@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 
-module core #(
+module stc_core #(
     parameter N_UNIT = 32,
     parameter N_ADDERS = N_UNIT - 1,
     parameter N_BUSLINE = 2*N_ADDERS,
-    parameter TILE_K = 16,
-    parameter DW_DATA = 8,
+    parameter TILE_K = 8,
+    parameter DW_DATA = 32,
     parameter N_LEVELS = 2*$clog2(N_UNIT)-1
 ) (
     input clk,
@@ -37,6 +37,8 @@ module core #(
             reg_in_dn <= 0;
         end
         else if (enable) begin
+            reg_in_a <= wire_dn_out;
+            reg_in_b <= wire_dn_out;
             if (in_valid[1]) begin
                 reg_in_dn <= in_a;
             end
@@ -49,11 +51,11 @@ module core #(
         end
     end
 
-    always @(*) begin
-        reg_in_a <= wire_dn_out;
-        reg_in_b <= wire_dn_out;
-        //reg_in_dn <= 0;
-    end
+    // always @(*) begin
+    //     reg_in_a <= wire_dn_out;
+    //     reg_in_b <= wire_dn_out;
+    //     //reg_in_dn <= 0;
+    // end
     
     dn_benes #(
         .N(N_UNIT),
