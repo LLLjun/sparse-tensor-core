@@ -27,7 +27,6 @@ module matrix_save_unit #(
     localparam       W1R0 = 3'd2;
     integer i, j, k;
 
-
     wire [LOCAL_BUFFER_SIZE*DW_DATA-1:0]    wire_write;
     reg [LOCAL_BUFFER_SIZE*DW_DATA-1:0]    reg_read;
     wire [LOCAL_BUFFER_SIZE*DW_DATA-1:0] wire_read [1:0];
