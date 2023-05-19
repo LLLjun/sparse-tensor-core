@@ -2,7 +2,7 @@ module matrix_save_unit_basic #(
   parameter M_TILE = 4, N_TILE = 4,
   parameter M_EXPAND = 1,
   parameter N_SECTION = 4,
-  parameter DW_DATA = 32, DW_MEM_WRITE = M_TILE*N_TILE*M_EXPAND*N_SECTION*DW_DATA)
+  parameter DW_DATA = 32, DW_MEM_WRITE = M_TILE*N_TILE*M_EXPAND*DW_DATA)
 (
   input                             clk,
   input                             rst,
