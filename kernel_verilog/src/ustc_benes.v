@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module dn_benes 
+module ustc_benes 
 #(
     parameter N = 32,
     parameter DW_DATA = 32,

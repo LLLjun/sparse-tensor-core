@@ -3,9 +3,9 @@
 
 // parallel 4 4 4, 8bit
 
-module dp_group #(
+module multiplier_array #(
   parameter N_UNIT = 32,
-  parameter DW_DATA = 32
+  parameter DW_DATA = 8
 )(
   input clk,
   input reset,
@@ -18,11 +18,11 @@ module dp_group #(
 
   genvar i;
   generate
-    for (i=0; i<N_UNIT; i=i+1) begin: u_dp_unit
-      dp_unit #(
+    for (i=0; i<N_UNIT; i=i+1) begin: u_multi_unit
+      multiply_unit #(
         .DW_DATA(DW_DATA)
       )
-      dp_unit_inst(
+      multi_unit_inst(
         .clk(clk),
         .reset(reset),
         .enable(enable),

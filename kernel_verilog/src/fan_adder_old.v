@@ -2,12 +2,11 @@
 
 module fan_adder
 #(
-    parameter DW_DATA = 32,
+    parameter DW_DATA = 8,
     parameter NUM_IN = 2,
     parameter SEL_IN = 2
 )
 (
-    input clk,
     input add_en,
     input bypass_en,
     input [DW_DATA*NUM_IN-1:0] in,
@@ -21,10 +20,8 @@ module fan_adder
     wire [DW_DATA*2-1:0] reg_in;
     wire [3:0] reg_edge_tag_in;
     reg [DW_DATA*2-1:0] reg_out;
-    wire [DW_DATA-1:0] wire_add_result;
     reg [3:0] reg_edge_tag_out;
     reg [1:0] reg_out_valid;
-    wire s_axis_a_tready, s_axis_b_tready, m_axis_result_tvalid;
 
     reduction_mux #(
         .DW_DATA(DW_DATA),
@@ -40,8 +37,7 @@ module fan_adder
 
     always @(*) begin
         if (add_en && ~bypass_en) begin
-            // reg_out <= {reg_in[DW_DATA-1:0] + reg_in[2*DW_DATA-1 -:DW_DATA], reg_in[DW_DATA-1:0] + reg_in[2*DW_DATA-1 -:DW_DATA]};
-            reg_out <= {2{wire_add_result}};
+            reg_out <= {reg_in[DW_DATA-1:0] + reg_in[2*DW_DATA-1 -:DW_DATA], reg_in[DW_DATA-1:0] + reg_in[2*DW_DATA-1 -:DW_DATA]};
             if (reg_edge_tag_in[1:0] == 'b01) begin
                 reg_edge_tag_out <= 'b0101;
             end
@@ -75,19 +71,6 @@ module fan_adder
             reg_out_valid <= 'b00;
         end
     end
-
-    floating_point_1 your_instance_name (
-        .aclk(clk),                                  // input wire aclk
-        .s_axis_a_tvalid(1'b1),            // input wire s_axis_a_tvalid
-        .s_axis_a_tready(s_axis_a_tready),            // output wire s_axis_a_tready
-        .s_axis_a_tdata(reg_in[DW_DATA-1:0]),              // input wire [31 : 0] s_axis_a_tdata
-        .s_axis_b_tvalid(1'b1),            // input wire s_axis_b_tvalid
-        .s_axis_b_tready(s_axis_b_tready),            // output wire s_axis_b_tready
-        .s_axis_b_tdata(reg_in[2*DW_DATA-1 -:DW_DATA]),              // input wire [31 : 0] s_axis_b_tdata
-        .m_axis_result_tvalid(m_axis_result_tvalid),  // output wire m_axis_result_tvalid
-        .m_axis_result_tready(1'b1),  // input wire m_axis_result_tready
-        .m_axis_result_tdata(wire_add_result)    // output wire [31 : 0] m_axis_result_tdata
-    );
     
     assign out = reg_out;
     assign edge_tag_out = reg_edge_tag_out;

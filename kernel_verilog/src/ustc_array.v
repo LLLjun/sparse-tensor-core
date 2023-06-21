@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module stc_core #(
+module ustc_array #(
     parameter N_UNIT = 32,
     parameter N_ADDERS = N_UNIT - 1,
     parameter N_BUSLINE = 2*N_ADDERS,
@@ -57,7 +57,7 @@ module stc_core #(
     //     //reg_in_dn <= 0;
     // end
     
-    dn_benes #(
+    ustc_benes #(
         .N(N_UNIT),
         .DW_DATA(DW_DATA)
     ) u_dn_benes (
@@ -70,7 +70,7 @@ module stc_core #(
         .out(wire_dn_out)
     );
 
-    dp_group #(
+    multiplier_array #(
         .N_UNIT(N_UNIT),
         .DW_DATA(DW_DATA)
     ) u_dp_group (
@@ -83,7 +83,7 @@ module stc_core #(
         .out(wire_dp_out)
     );
 
-    fan_tree #(
+    ustc_fan #(
         .N(N_UNIT),
         .DW_DATA(DW_DATA)
     ) u_fan_tree (

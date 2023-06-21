@@ -1,27 +1,29 @@
-module crossbar #(
+module ustc_crossbar #(
     parameter N = 8,
-    parameter DW_DATA = 32
+    parameter DW_DATA = 32,
+    parameter NUM_PER_LINE = 4,
+    parameter DW_LINE = DW_DATA * NUM_PER_LINE
 ) (
     input clk,
     input reset,
     input [N*N-1:0] ctrl,
-    input [N*DW_DATA-1:0] in,
-    output reg [N*DW_DATA-1:0] out
+    input [N*DW_LINE-1:0] in,
+    output reg [N*DW_LINE-1:0] out
 );
 
-    reg [DW_DATA-1:0] reg_in [N-1:0][N-1:0][1:0];
-    wire [DW_DATA-1:0] wire_out [N-1:0][N-1:0][1:0];
+    reg [DW_LINE-1:0] reg_in [N-1:0][N-1:0][1:0];
+    wire [DW_LINE-1:0] wire_out [N-1:0][N-1:0][1:0];
 
     integer i,j;
 
     // set connection
     always @(*) begin
         //up-left corner
-        reg_in[0][0][0] <= in[0 +:DW_DATA];
+        reg_in[0][0][0] <= in[0 +:DW_LINE];
         reg_in[0][0][1] <= 0;
         //left edge
         for (i=1; i<N; i=i+1) begin
-            reg_in[i][0][0] <= in[i*DW_DATA +:DW_DATA];
+            reg_in[i][0][0] <= in[i*DW_LINE +:DW_LINE];
             reg_in[i][0][1] <= wire_out[i-1][0][1];
         end
         // up edge
@@ -38,7 +40,7 @@ module crossbar #(
         end
         // output at down edge
         for (j=0; j<N; j=j+1) begin
-            out[j*DW_DATA +:DW_DATA] <= wire_out[N-1][j][1];
+            out[j*DW_LINE +:DW_LINE] <= wire_out[N-1][j][1];
         end
     end
 
@@ -47,9 +49,10 @@ module crossbar #(
         for (gi=0; gi<N; gi=gi+1) begin: gen_row
             for (gj=0; gj<N; gj=gj+1) begin: gen_sw
                 crossbar_switch #(
-                    .DW_DATA(DW_DATA)
+                    .DW_DATA(DW_LINE)
                 ) u_x_sw (
                     .clk(clk),
+                    .reset(reset),
                     .ctrl(ctrl[gi*N+gj]),
                     .in({reg_in[gi][gj][1], reg_in[gi][gj][0]}),
                     .out({wire_out[gi][gj][1], wire_out[gi][gj][0]})
