@@ -7,703 +7,531 @@ module ustc_fan #(
     // for data width
     parameter DW_DATA = 32,
     parameter DW_ROW = 5,
-    parameter DW_CTRL = 5,
+    parameter DW_CTRL = 4,
     parameter DW_LINE = DW_DATA + DW_ROW + DW_CTRL
 ) (
     input clk,
+    input rst,
     input [NUM_IN*DW_LINE-1:0] in,
     output [NUM_IN*DW_LINE-1:0] out
 );
 
     integer i;
-    genvar gi;
-    reg [DW_LINE-1:0] reg_line [N_LEVELS:0][NUM_IN-1:0];
-    wire [DW_LINE-1:0] wire_out [NUM_IN-2:0][1:0];
-
-    always @(*) begin
-        for (i=0; i<NUM_IN; i=i+1) begin
-            reg_line[0][i] <= in[i*DW_LINE +:DW_LINE];
-        end
-    end
+    genvar gi;  
+    wire [DW_LINE-1:0] in_line [NUM_IN-1:0];
+    wire [DW_LINE-1:0] wire_out_2 [23:0][1:0];
+    wire [DW_LINE-1:0] wire_out_4 [3:0][3:0];
+    wire [DW_LINE-1:0] wire_out_6 [1:0][5:0];
+    wire [DW_LINE-1:0] wire_out_8 [7:0];
+    reg [DW_LINE-1:0] reg_lv2 [15:0];
+    reg [DW_LINE-1:0] reg_lv3 [15:0];
+    reg [DW_LINE-1:0] reg_lv4 [19:0];
+    reg [DW_LINE-1:0] reg_lv5 [23:0];
 
     generate begin
         for (gi=0; gi<NUM_IN; gi=gi+1)
-            assign out = reg_line[N_LEVELS][gi];
+            assign in_line[gi] = in[gi*DW_LINE +:DW_LINE];
     end
     endgenerate
 
     always @(posedge clk) begin
-        // set reg layer 1
-        if (reg_line[0][0][DW_LINE-2] == 1)
-            reg_line[1][0] <= reg_line[0][0];
-        else
-            reg_line[1][0] <= wire_out[0][0];
-        if (reg_line[0][1][DW_LINE-2] == 1)
-            reg_line[1][1] <= reg_line[0][1];
-        else
-            reg_line[1][1] <= wire_out[0][1];
-        if (reg_line[0][2][DW_LINE-2] == 1)
-            reg_line[1][2] <= reg_line[0][2];
-        else
-            reg_line[1][2] <= wire_out[2][0];
-        if (reg_line[0][3][DW_LINE-2] == 1)
-            reg_line[1][3] <= reg_line[0][3];
-        else
-            reg_line[1][3] <= wire_out[2][1];
-        if (reg_line[0][4][DW_LINE-2] == 1)
-            reg_line[1][4] <= reg_line[0][4];
-        else
-            reg_line[1][4] <= wire_out[4][0];
-        if (reg_line[0][5][DW_LINE-2] == 1)
-            reg_line[1][5] <= reg_line[0][5];
-        else
-            reg_line[1][5] <= wire_out[4][1];
-        if (reg_line[0][6][DW_LINE-2] == 1)
-            reg_line[1][6] <= reg_line[0][6];
-        else
-            reg_line[1][6] <= wire_out[6][0];
-        if (reg_line[0][7][DW_LINE-2] == 1)
-            reg_line[1][7] <= reg_line[0][7];
-        else
-            reg_line[1][7] <= wire_out[6][1];
-        if (reg_line[0][8][DW_LINE-2] == 1)
-            reg_line[1][8] <= reg_line[0][8];
-        else
-            reg_line[1][8] <= wire_out[8][0];
-        if (reg_line[0][9][DW_LINE-2] == 1)
-            reg_line[1][9] <= reg_line[0][9];
-        else
-            reg_line[1][9] <= wire_out[8][1];
-        if (reg_line[0][10][DW_LINE-2] == 1)
-            reg_line[1][10] <= reg_line[0][10];
-        else
-            reg_line[1][10] <= wire_out[10][0];
-        if (reg_line[0][11][DW_LINE-2] == 1)
-            reg_line[1][11] <= reg_line[0][11];
-        else
-            reg_line[1][11] <= wire_out[10][1];
-        if (reg_line[0][12][DW_LINE-2] == 1)
-            reg_line[1][12] <= reg_line[0][12];
-        else
-            reg_line[1][12] <= wire_out[12][0];
-        if (reg_line[0][13][DW_LINE-2] == 1)
-            reg_line[1][13] <= reg_line[0][13];
-        else
-            reg_line[1][13] <= wire_out[12][1];
-        if (reg_line[0][14][DW_LINE-2] == 1)
-            reg_line[1][14] <= reg_line[0][14];
-        else
-            reg_line[1][14] <= wire_out[14][0];
-        if (reg_line[0][15][DW_LINE-2] == 1)
-            reg_line[1][15] <= reg_line[0][15];
-        else
-            reg_line[1][15] <= wire_out[14][1];
-        if (reg_line[0][16][DW_LINE-2] == 1)
-            reg_line[1][16] <= reg_line[0][16];
-        else
-            reg_line[1][16] <= wire_out[16][0];
-        if (reg_line[0][17][DW_LINE-2] == 1)
-            reg_line[1][17] <= reg_line[0][17];
-        else
-            reg_line[1][17] <= wire_out[16][1];
-        if (reg_line[0][18][DW_LINE-2] == 1)
-            reg_line[1][18] <= reg_line[0][18];
-        else
-            reg_line[1][18] <= wire_out[18][0];
-        if (reg_line[0][19][DW_LINE-2] == 1)
-            reg_line[1][19] <= reg_line[0][19];
-        else
-            reg_line[1][19] <= wire_out[18][1];
-        if (reg_line[0][20][DW_LINE-2] == 1)
-            reg_line[1][20] <= reg_line[0][20];
-        else
-            reg_line[1][20] <= wire_out[20][0];
-        if (reg_line[0][21][DW_LINE-2] == 1)
-            reg_line[1][21] <= reg_line[0][21];
-        else
-            reg_line[1][21] <= wire_out[20][1];
-        if (reg_line[0][22][DW_LINE-2] == 1)
-            reg_line[1][22] <= reg_line[0][22];
-        else
-            reg_line[1][22] <= wire_out[22][0];
-        if (reg_line[0][23][DW_LINE-2] == 1)
-            reg_line[1][23] <= reg_line[0][23];
-        else
-            reg_line[1][23] <= wire_out[22][1];
-        if (reg_line[0][24][DW_LINE-2] == 1)
-            reg_line[1][24] <= reg_line[0][24];
-        else
-            reg_line[1][24] <= wire_out[24][0];
-        if (reg_line[0][25][DW_LINE-2] == 1)
-            reg_line[1][25] <= reg_line[0][25];
-        else
-            reg_line[1][25] <= wire_out[24][1];
-        if (reg_line[0][26][DW_LINE-2] == 1)
-            reg_line[1][26] <= reg_line[0][26];
-        else
-            reg_line[1][26] <= wire_out[26][0];
-        if (reg_line[0][27][DW_LINE-2] == 1)
-            reg_line[1][27] <= reg_line[0][27];
-        else
-            reg_line[1][27] <= wire_out[26][1];
-        if (reg_line[0][28][DW_LINE-2] == 1)
-            reg_line[1][28] <= reg_line[0][28];
-        else
-            reg_line[1][28] <= wire_out[28][0];
-        if (reg_line[0][29][DW_LINE-2] == 1)
-            reg_line[1][29] <= reg_line[0][29];
-        else
-            reg_line[1][29] <= wire_out[28][1];
-        if (reg_line[0][30][DW_LINE-2] == 1)
-            reg_line[1][30] <= reg_line[0][30];
-        else
-            reg_line[1][30] <= wire_out[30][0];
-        if (reg_line[0][31][DW_LINE-2] == 1)
-            reg_line[1][31] <= reg_line[0][31];
-        else
-            reg_line[1][31] <= wire_out[30][1];
-        // set reg layer 2
-        reg_line[2][0] <= reg_line[1][0];
-        reg_line[2][1] <= reg_line[1][1];
-        if (reg_line[2][2][DW_LINE-2] == 1)
-            reg_line[2][2] <= reg_line[1][2];
-        else
-            reg_line[2][2] <= wire_out[1][0];
-        reg_line[2][3] <= reg_line[1][3];
-        reg_line[2][4] <= reg_line[1][4];
-        if (reg_line[2][5][DW_LINE-2] == 1)
-            reg_line[2][5] <= reg_line[1][5];
-        else
-            reg_line[2][5] <= wire_out[5][0];
-        if (reg_line[1][6][DW_LINE-2] == 1)
-            reg_line[2][6] <= reg_line[1][6];
-        else
-            reg_line[2][6] <= wire_out[5][0];
-        reg_line[2][7] <= reg_line[1][7];
-        reg_line[2][8] <= reg_line[1][8];
-        if (reg_line[1][9][DW_LINE-2] == 1)
-            reg_line[2][9] <= reg_line[1][9];
-        else
-            reg_line[2][9] <= wire_out[9][0];
-        if (reg_line[1][10][DW_LINE-2] == 1)
-            reg_line[2][10] <= reg_line[1][10];
-        else
-            reg_line[2][10] <= wire_out[9][0];
-        reg_line[2][11] <= reg_line[1][11];
-        reg_line[2][12] <= reg_line[1][12];
-        if (reg_line[1][13][DW_LINE-2] == 1)
-            reg_line[2][13] <= reg_line[1][13];
-        else
-            reg_line[2][13] <= wire_out[13][0];
-        if (reg_line[1][14][DW_LINE-2] == 1)
-            reg_line[2][14] <= reg_line[1][14];
-        else
-            reg_line[2][14] <= wire_out[13][0];
-        reg_line[2][15] <= reg_line[1][15];
-        reg_line[2][16] <= reg_line[1][16];
-        if (reg_line[1][17][DW_LINE-2] == 1)
-            reg_line[2][17] <= reg_line[1][17];
-        else
-            reg_line[2][17] <= wire_out[17][0];
-        if (reg_line[1][18][DW_LINE-2] == 1)
-            reg_line[2][18] <= reg_line[1][18];
-        else
-            reg_line[2][18] <= wire_out[17][0];
-        reg_line[2][19] <= reg_line[1][19];
-        reg_line[2][20] <= reg_line[1][20];
-        if (reg_line[1][21][DW_LINE-2] == 1)
-            reg_line[2][21] <= reg_line[1][21];
-        else
-            reg_line[2][21] <= wire_out[21][0];
-        if (reg_line[1][22][DW_LINE-2] == 1)
-            reg_line[2][22] <= reg_line[1][22];
-        else
-            reg_line[2][22] <= wire_out[21][0];
-        reg_line[2][23] <= reg_line[1][23];
-        reg_line[2][24] <= reg_line[1][24];
-        if (reg_line[1][25][DW_LINE-2] == 1)
-            reg_line[2][25] <= reg_line[1][25];
-        else
-            reg_line[2][25] <= wire_out[25][0];
-        if (reg_line[1][26][DW_LINE-2] == 1)
-            reg_line[2][26] <= reg_line[1][26];
-        else
-            reg_line[2][26] <= wire_out[25][0];
-        reg_line[2][27] <= reg_line[1][27];
-        reg_line[2][28] <= reg_line[1][28];
-        if (reg_line[1][29][DW_LINE-2] == 1)
-            reg_line[2][29] <= reg_line[1][29];
-        else
-            reg_line[2][29] <= wire_out[29][0];
-        reg_line[2][30] <= reg_line[1][30];
-        reg_line[2][31] <= reg_line[1][31];
-        // set reg layer 3
-        reg_line[3][0] <= reg_line[2][0];
-        reg_line[3][1] <= reg_line[2][1];
-        reg_line[3][2] <= reg_line[2][2];
-        reg_line[3][3] <= reg_line[2][3];
-        reg_line[3][4] <= reg_line[2][4];
-        if (reg_line[2][5][DW_LINE-2] == 1)
-            reg_line[3][5] <= reg_line[2][5];
-        else
-            reg_line[3][5] <= wire_out[3][0];
-        reg_line[3][6] <= reg_line[2][6];
-        reg_line[3][7] <= reg_line[2][7];
-        reg_line[3][8] <= reg_line[2][8];
-        reg_line[3][9] <= reg_line[2][9];
-        if (reg_line[2][10][DW_LINE-2] == 1)
-            reg_line[3][10] <= reg_line[2][10];
-        else
-            reg_line[3][10] <= wire_out[11][0];
-        reg_line[3][11] <= reg_line[2][11];
-        reg_line[3][12] <= reg_line[2][12];
-        if (reg_line[2][13][DW_LINE-2] == 1)
-            reg_line[3][13] <= reg_line[2][13];
-        else
-            reg_line[3][13] <= wire_out[11][0];
-        reg_line[3][14] <= reg_line[2][14];
-        reg_line[3][15] <= reg_line[2][15];
-        reg_line[3][16] <= reg_line[2][16];
-        reg_line[3][17] <= reg_line[2][17];
-        if (reg_line[2][18][DW_LINE-2] == 1)
-            reg_line[3][18] <= reg_line[2][18];
-        else
-            reg_line[3][18] <= wire_out[19][0];
-        reg_line[3][19] <= reg_line[2][19];
-        reg_line[3][20] <= reg_line[2][20];
-        if (reg_line[2][21][DW_LINE-2] == 1)
-            reg_line[3][21] <= reg_line[2][21];
-        else
-            reg_line[3][21] <= wire_out[19][0];
-        reg_line[3][22] <= reg_line[2][22];
-        reg_line[3][23] <= reg_line[2][23];
-        reg_line[3][24] <= reg_line[2][24];
-        reg_line[3][25] <= reg_line[2][25];
-        if (reg_line[2][26][DW_LINE-2] == 1)
-            reg_line[3][26] <= reg_line[2][26];
-        else
-            reg_line[3][26] <= wire_out[27][0];
-        reg_line[3][27] <= reg_line[2][27];
-        reg_line[3][28] <= reg_line[2][28];
-        reg_line[3][29] <= reg_line[2][29];
-        reg_line[3][30] <= reg_line[2][30];
-        reg_line[3][31] <= reg_line[2][31];
-        // set for layer 4
-        reg_line[4][0] <= reg_line[3][0];
-        reg_line[4][1] <= reg_line[3][1];
-        reg_line[4][2] <= reg_line[3][2];
-        reg_line[4][3] <= reg_line[3][3];
-        reg_line[4][4] <= reg_line[3][4];
-        reg_line[4][5] <= reg_line[3][5];
-        reg_line[4][6] <= reg_line[3][6];
-        reg_line[4][7] <= reg_line[3][7];
-        reg_line[4][8] <= reg_line[3][8];
-        reg_line[4][9] <= reg_line[3][9];
-        if (reg_line[3][10][DW_LINE-2] == 1)
-            reg_line[4][10] <= reg_line[3][10];
-        else
-            reg_line[4][10] <= wire_out[7][0];
-        reg_line[4][11] <= reg_line[3][11];
-        reg_line[4][12] <= reg_line[3][12];
-        reg_line[4][13] <= reg_line[3][13];
-        reg_line[4][14] <= reg_line[3][14];
-        reg_line[4][15] <= reg_line[3][15];
-        reg_line[4][16] <= reg_line[3][16];
-        reg_line[4][17] <= reg_line[3][17];
-        reg_line[4][18] <= reg_line[3][18];
-        reg_line[4][19] <= reg_line[3][19];
-        reg_line[4][20] <= reg_line[3][20];
-        if (reg_line[3][21][DW_LINE-2] == 1)
-            reg_line[4][21] <= reg_line[3][21];
-        else
-            reg_line[4][21] <= wire_out[23][0];
-        reg_line[4][22] <= reg_line[3][22];
-        reg_line[4][23] <= reg_line[3][23];
-        reg_line[4][24] <= reg_line[3][24];
-        reg_line[4][25] <= reg_line[3][25];
-        reg_line[4][26] <= reg_line[3][26];
-        reg_line[4][27] <= reg_line[3][27];
-        reg_line[4][28] <= reg_line[3][28];
-        reg_line[4][29] <= reg_line[3][29];
-        reg_line[4][30] <= reg_line[3][30];
-        reg_line[4][31] <= reg_line[3][31];
-        // set reg layer 5
-        reg_line[5][0] <= reg_line[4][0];
-        reg_line[5][1] <= reg_line[4][1];
-        reg_line[5][2] <= reg_line[4][2];
-        reg_line[5][3] <= reg_line[4][3];
-        reg_line[5][4] <= reg_line[4][4];
-        reg_line[5][5] <= reg_line[4][5];
-        reg_line[5][6] <= reg_line[4][6];
-        reg_line[5][7] <= reg_line[4][7];
-        reg_line[5][8] <= reg_line[4][8];
-        reg_line[5][9] <= reg_line[4][9];
-        reg_line[5][10] <= reg_line[4][10];
-        reg_line[5][11] <= reg_line[4][11];
-        reg_line[5][12] <= reg_line[4][12];
-        reg_line[5][13] <= reg_line[4][13];
-        reg_line[5][14] <= reg_line[4][14];
-        if (reg_line[4][15][DW_LINE-2] == 1)
-            reg_line[5][15] <= reg_line[4][15];
-        else
-            reg_line[5][15] <= wire_out[15][0];
-        reg_line[5][16] <= reg_line[4][16];
-        reg_line[5][17] <= reg_line[4][17];
-        reg_line[5][18] <= reg_line[4][18];
-        reg_line[5][19] <= reg_line[4][19];
-        reg_line[5][20] <= reg_line[4][20];
-        reg_line[5][21] <= reg_line[4][21];
-        reg_line[5][22] <= reg_line[4][22];
-        reg_line[5][23] <= reg_line[4][23];
-        reg_line[5][24] <= reg_line[4][24];
-        reg_line[5][25] <= reg_line[4][25];
-        reg_line[5][26] <= reg_line[4][26];
-        reg_line[5][27] <= reg_line[4][27];
-        reg_line[5][28] <= reg_line[4][28];
-        reg_line[5][29] <= reg_line[4][29];
-        reg_line[5][30] <= reg_line[4][30];
-        reg_line[5][31] <= reg_line[4][31];
+        if (rst) begin
+            for (i=0; i<16; i=i+1)
+                reg_lv2[i] <= 0;
+            for (i=0; i<16; i=i+1)
+                reg_lv3[i] <= 0;
+            for (i=0; i<20; i=i+1)
+                reg_lv4[i] <= 0;
+            for (i=0; i<24; i=i+1)
+                reg_lv5[5] <= 0;
+        end
+        else begin
+            // lv2
+            reg_lv2[0] <= wire_out_2[0][0];
+            reg_lv2[1] <= wire_out_2[1][1];
+            reg_lv2[2] <= wire_out_2[2][0];
+            reg_lv2[3] <= wire_out_2[3][1];
+            reg_lv2[4] <= wire_out_2[4][0];
+            reg_lv2[5] <= wire_out_2[5][1];
+            reg_lv2[6] <= wire_out_2[6][0];
+            reg_lv2[7] <= wire_out_2[7][1];
+            reg_lv2[8] <= wire_out_2[8][0];
+            reg_lv2[9] <= wire_out_2[9][1];
+            reg_lv2[10] <= wire_out_2[10][0];
+            reg_lv2[11] <= wire_out_2[11][1];
+            reg_lv2[12] <= wire_out_2[12][0];
+            reg_lv2[13] <= wire_out_2[13][1];
+            reg_lv2[14] <= wire_out_2[14][0];
+            reg_lv2[15] <= wire_out_2[15][1];
+            // lv3
+            reg_lv3[0] <= reg_lv2[0];
+            reg_lv3[1] <= wire_out_2[16][0];
+            reg_lv3[2] <= wire_out_2[17][1];
+            reg_lv3[3] <= reg_lv2[3];
+            reg_lv3[4] <= reg_lv2[4];
+            reg_lv3[5] <= wire_out_2[18][0];
+            reg_lv3[6] <= wire_out_2[19][1];
+            reg_lv3[7] <= reg_lv2[7];
+            reg_lv3[8] <= reg_lv2[8];
+            reg_lv3[9] <= wire_out_2[20][0];
+            reg_lv3[10] <= wire_out_2[21][1];
+            reg_lv3[11] <= reg_lv2[11];
+            reg_lv3[12] <= reg_lv2[12];
+            reg_lv3[13] <= wire_out_2[22][0];
+            reg_lv3[14] <= wire_out_2[23][1];
+            reg_lv3[15] <= reg_lv2[15];
+            // lv4
+            reg_lv4[0] <= reg_lv3[0];
+            reg_lv4[1] <= reg_lv3[1];
+            reg_lv4[2] <= wire_out_4[0][0];
+            reg_lv4[3] <= wire_out_4[0][1];
+            reg_lv4[4] <= wire_out_4[0][3];
+            reg_lv4[5] <= wire_out_4[1][0];
+            reg_lv4[6] <= wire_out_4[1][2];
+            reg_lv4[7] <= wire_out_4[1][3];
+            reg_lv4[8] <= reg_lv3[6];
+            reg_lv4[9] <= reg_lv3[7];
+            reg_lv4[10] <= reg_lv3[8];
+            reg_lv4[11] <= reg_lv3[9];
+            reg_lv4[12] <= wire_out_4[2][0];
+            reg_lv4[13] <= wire_out_4[2][1];
+            reg_lv4[14] <= wire_out_4[2][3];
+            reg_lv4[15] <= wire_out_4[3][0];
+            reg_lv4[16] <= wire_out_4[3][2];
+            reg_lv4[17] <= wire_out_4[3][3];
+            reg_lv4[18] <= reg_lv3[14];
+            reg_lv4[19] <= reg_lv3[15];
+            // lv4
+            reg_lv5[0] <= reg_lv4[0];
+            reg_lv5[1] <= reg_lv4[1];
+            reg_lv5[2] <= reg_lv4[2];
+            reg_lv5[3] <= reg_lv4[3];
+            reg_lv5[4] <= wire_out_6[0][0];
+            reg_lv5[5] <= reg_lv4[4];
+            reg_lv5[6] <= wire_out_6[0][1];
+            reg_lv5[7] <= wire_out_6[0][2];
+            reg_lv5[8] <= wire_out_6[0][4];
+            reg_lv5[9] <= reg_lv4[5];
+            reg_lv5[10] <= wire_out_6[0][5];
+            reg_lv5[11] <= reg_lv4[7];
+            reg_lv5[12] <= reg_lv4[12];
+            reg_lv5[13] <= wire_out_6[1][0];
+            reg_lv5[14] <= reg_lv4[14];
+            reg_lv5[15] <= wire_out_6[1][1];
+            reg_lv5[16] <= wire_out_6[1][3];
+            reg_lv5[17] <= wire_out_6[1][4];
+            reg_lv5[18] <= reg_lv4[15];
+            reg_lv5[19] <= wire_out_6[1][5];
+            reg_lv5[20] <= reg_lv4[16];
+            reg_lv5[21] <= reg_lv4[17];
+            reg_lv5[22] <= reg_lv4[18];
+            reg_lv5[23] <= reg_lv4[19];
+        end
     end
 
-fan_adder #(
+    assign out[0*DW_LINE +:DW_LINE] = reg_lv5[0];
+    assign out[1*DW_LINE +:DW_LINE] = reg_lv5[1];
+    assign out[2*DW_LINE +:DW_LINE] = reg_lv5[2];
+    assign out[3*DW_LINE +:DW_LINE] = reg_lv5[3];
+    assign out[4*DW_LINE +:DW_LINE] = reg_lv5[4];
+    assign out[5*DW_LINE +:DW_LINE] = reg_lv5[5];
+    assign out[6*DW_LINE +:DW_LINE] = reg_lv5[6];
+    assign out[7*DW_LINE +:DW_LINE] = reg_lv5[7];
+    assign out[8*DW_LINE +:DW_LINE] = wire_out_8[0];
+    assign out[9*DW_LINE +:DW_LINE] = reg_lv5[8];
+    assign out[10*DW_LINE +:DW_LINE] = reg_lv5[9];
+    assign out[11*DW_LINE +:DW_LINE] = reg_lv5[10];
+    assign out[12*DW_LINE +:DW_LINE] = wire_out_8[1];
+    assign out[13*DW_LINE +:DW_LINE] = reg_lv5[11];
+    assign out[14*DW_LINE +:DW_LINE] = wire_out_8[2];
+    assign out[15*DW_LINE +:DW_LINE] = wire_out_8[3];
+    assign out[16*DW_LINE +:DW_LINE] = wire_out_8[4];
+    assign out[17*DW_LINE +:DW_LINE] = wire_out_8[5];
+    assign out[18*DW_LINE +:DW_LINE] = reg_lv5[12];
+    assign out[19*DW_LINE +:DW_LINE] = wire_out_8[6];
+    assign out[20*DW_LINE +:DW_LINE] = reg_lv5[13];
+    assign out[21*DW_LINE +:DW_LINE] = reg_lv5[14];
+    assign out[22*DW_LINE +:DW_LINE] = reg_lv5[15];
+    assign out[23*DW_LINE +:DW_LINE] = wire_out_8[7];
+    assign out[24*DW_LINE +:DW_LINE] = reg_lv5[16];
+    assign out[25*DW_LINE +:DW_LINE] = reg_lv5[17];
+    assign out[26*DW_LINE +:DW_LINE] = reg_lv5[18];
+    assign out[27*DW_LINE +:DW_LINE] = reg_lv5[19];
+    assign out[28*DW_LINE +:DW_LINE] = reg_lv5[20];
+    assign out[29*DW_LINE +:DW_LINE] = reg_lv5[21];
+    assign out[30*DW_LINE +:DW_LINE] = reg_lv5[22];
+    assign out[31*DW_LINE +:DW_LINE] = reg_lv5[23];
+
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_0 (
    .clk(clk),
-   .in({reg_line[0][1], reg_line[0][0]}),
-   .out({wire_out[0][1], wire_out[0][0]})
+   .rst(rst),
+   .in({in_line[1], in_line[0]}),
+   .out({wire_out_2[0][1], wire_out_2[0][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_1 (
    .clk(clk),
-   .in({reg_line[1][2], reg_line[1][1]}),
-   .out({wire_out[1][1], wire_out[1][0]})
+   .rst(rst),
+   .in({wire_out_2[1][0], wire_out_2[0][1]}),
+   .out({wire_out_2[16][1], wire_out_2[16][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_2 (
    .clk(clk),
-   .in({reg_line[0][3], reg_line[0][2]}),
-   .out({wire_out[2][1], wire_out[2][0]})
+   .rst(rst),
+   .in({in_line[3], in_line[2]}),
+   .out({wire_out_2[1][1], wire_out_2[1][0]})
 );
 
-fan_adder #(
+fan_adder_4to4 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(4)
+   .SYMMETRY(1)
 ) u_fan_adder_3 (
    .clk(clk),
-   .in({reg_line[2][5], reg_line[2][4], reg_line[2][3], reg_line[2][2]}),
-   .out({wire_out[3][1], wire_out[3][0]})
+   .rst(rst),
+   .in({wire_out_2[17][0], reg_lv2[2], reg_lv2[1], wire_out_2[16][1]}),
+   .out({wire_out_4[0][3], wire_out_4[0][2], wire_out_4[0][1], wire_out_4[0][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_4 (
    .clk(clk),
-   .in({reg_line[0][5], reg_line[0][4]}),
-   .out({wire_out[4][1], wire_out[4][0]})
+   .rst(rst),
+   .in({in_line[5], in_line[4]}),
+   .out({wire_out_2[2][1], wire_out_2[2][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_5 (
    .clk(clk),
-   .in({reg_line[1][6], reg_line[1][5]}),
-   .out({wire_out[5][1], wire_out[5][0]})
+   .rst(rst),
+   .in({wire_out_2[3][0], wire_out_2[2][1]}),
+   .out({wire_out_2[17][1], wire_out_2[17][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_6 (
    .clk(clk),
-   .in({reg_line[0][7], reg_line[0][6]}),
-   .out({wire_out[6][1], wire_out[6][0]})
+   .rst(rst),
+   .in({in_line[7], in_line[6]}),
+   .out({wire_out_2[3][1], wire_out_2[3][0]})
 );
 
-fan_adder #(
+fan_adder_6to6 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(6)
+   .SYMMETRY(1)
 ) u_fan_adder_7 (
    .clk(clk),
-   .in({reg_line[3][10], reg_line[3][9], reg_line[3][8], reg_line[3][7], reg_line[3][6], reg_line[3][5]}),
-   .out({wire_out[7][1], wire_out[7][0]})
+   .rst(rst),
+   .in({wire_out_4[1][1], reg_lv3[5], reg_lv3[4], reg_lv3[3], reg_lv3[2], wire_out_4[0][2]}),
+   .out({wire_out_6[0][5], wire_out_6[0][4], wire_out_6[0][3], wire_out_6[0][2], wire_out_6[0][1], wire_out_6[0][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_8 (
    .clk(clk),
-   .in({reg_line[0][9], reg_line[0][8]}),
-   .out({wire_out[8][1], wire_out[8][0]})
+   .rst(rst),
+   .in({in_line[9], in_line[8]}),
+   .out({wire_out_2[4][1], wire_out_2[4][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_9 (
    .clk(clk),
-   .in({reg_line[1][10], reg_line[1][9]}),
-   .out({wire_out[9][1], wire_out[9][0]})
+   .rst(rst),
+   .in({wire_out_2[5][0], wire_out_2[4][1]}),
+   .out({wire_out_2[18][1], wire_out_2[18][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_10 (
    .clk(clk),
-   .in({reg_line[0][11], reg_line[0][10]}),
-   .out({wire_out[10][1], wire_out[10][0]})
+   .rst(rst),
+   .in({in_line[11], in_line[10]}),
+   .out({wire_out_2[5][1], wire_out_2[5][0]})
 );
 
-fan_adder #(
+fan_adder_4to4 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(4)
+   .SYMMETRY(0)
 ) u_fan_adder_11 (
    .clk(clk),
-   .in({reg_line[2][13], reg_line[2][12], reg_line[2][11], reg_line[2][10]}),
-   .out({wire_out[11][1], wire_out[11][0]})
+   .rst(rst),
+   .in({wire_out_2[19][0], reg_lv2[6], reg_lv2[5], wire_out_2[18][1]}),
+   .out({wire_out_4[1][3], wire_out_4[1][2], wire_out_4[1][1], wire_out_4[1][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_12 (
    .clk(clk),
-   .in({reg_line[0][13], reg_line[0][12]}),
-   .out({wire_out[12][1], wire_out[12][0]})
+   .rst(rst),
+   .in({in_line[13], in_line[12]}),
+   .out({wire_out_2[6][1], wire_out_2[6][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_13 (
    .clk(clk),
-   .in({reg_line[1][14], reg_line[1][13]}),
-   .out({wire_out[13][1], wire_out[13][0]})
+   .rst(rst),
+   .in({wire_out_2[7][0], wire_out_2[6][1]}),
+   .out({wire_out_2[19][1], wire_out_2[19][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_14 (
    .clk(clk),
-   .in({reg_line[0][15], reg_line[0][14]}),
-   .out({wire_out[14][1], wire_out[14][0]})
+   .rst(rst),
+   .in({in_line[15], in_line[14]}),
+   .out({wire_out_2[7][1], wire_out_2[7][0]})
 );
 
-fan_adder #(
+fan_adder_8to8 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(8)
+   .SYMMETRY(0)
 ) u_fan_adder_15 (
    .clk(clk),
-   .in({reg_line[4][21], reg_line[4][18], reg_line[4][17], reg_line[4][16], reg_line[4][15], reg_line[4][14], reg_line[4][13], reg_line[4][10]}),
-   .out({wire_out[15][1], wire_out[15][0]})
+   .rst(rst),
+   .in({wire_out_6[1][2], reg_lv4[13], reg_lv4[11], reg_lv4[10], reg_lv4[9], reg_lv4[8], reg_lv4[6], wire_out_6[0][3]}),
+   .out({wire_out_8[7], wire_out_8[6], wire_out_8[5], wire_out_8[4], wire_out_8[3], wire_out_8[2], wire_out_8[1], wire_out_8[0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_16 (
    .clk(clk),
-   .in({reg_line[0][17], reg_line[0][16]}),
-   .out({wire_out[16][1], wire_out[16][0]})
+   .rst(rst),
+   .in({in_line[17], in_line[16]}),
+   .out({wire_out_2[8][1], wire_out_2[8][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_17 (
    .clk(clk),
-   .in({reg_line[1][18], reg_line[1][17]}),
-   .out({wire_out[17][1], wire_out[17][0]})
+   .rst(rst),
+   .in({wire_out_2[9][0], wire_out_2[8][1]}),
+   .out({wire_out_2[20][1], wire_out_2[20][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_18 (
    .clk(clk),
-   .in({reg_line[0][19], reg_line[0][18]}),
-   .out({wire_out[18][1], wire_out[18][0]})
+   .rst(rst),
+   .in({in_line[19], in_line[18]}),
+   .out({wire_out_2[9][1], wire_out_2[9][0]})
 );
 
-fan_adder #(
+fan_adder_4to4 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(4)
+   .SYMMETRY(1)
 ) u_fan_adder_19 (
    .clk(clk),
-   .in({reg_line[2][21], reg_line[2][20], reg_line[2][19], reg_line[2][18]}),
-   .out({wire_out[19][1], wire_out[19][0]})
+   .rst(rst),
+   .in({wire_out_2[21][0], reg_lv2[10], reg_lv2[9], wire_out_2[20][1]}),
+   .out({wire_out_4[2][3], wire_out_4[2][2], wire_out_4[2][1], wire_out_4[2][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_20 (
    .clk(clk),
-   .in({reg_line[0][21], reg_line[0][20]}),
-   .out({wire_out[20][1], wire_out[20][0]})
+   .rst(rst),
+   .in({in_line[21], in_line[20]}),
+   .out({wire_out_2[10][1], wire_out_2[10][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_21 (
    .clk(clk),
-   .in({reg_line[1][22], reg_line[1][21]}),
-   .out({wire_out[21][1], wire_out[21][0]})
+   .rst(rst),
+   .in({wire_out_2[11][0], wire_out_2[10][1]}),
+   .out({wire_out_2[21][1], wire_out_2[21][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_22 (
    .clk(clk),
-   .in({reg_line[0][23], reg_line[0][22]}),
-   .out({wire_out[22][1], wire_out[22][0]})
+   .rst(rst),
+   .in({in_line[23], in_line[22]}),
+   .out({wire_out_2[11][1], wire_out_2[11][0]})
 );
 
-fan_adder #(
+fan_adder_6to6 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(6)
+   .SYMMETRY(0)
 ) u_fan_adder_23 (
    .clk(clk),
-   .in({reg_line[3][26], reg_line[3][25], reg_line[3][24], reg_line[3][23], reg_line[3][22], reg_line[3][21]}),
-   .out({wire_out[23][1], wire_out[23][0]})
+   .rst(rst),
+   .in({wire_out_4[3][1], reg_lv3[13], reg_lv3[12], reg_lv3[11], reg_lv3[10], wire_out_4[2][2]}),
+   .out({wire_out_6[1][5], wire_out_6[1][4], wire_out_6[1][3], wire_out_6[1][2], wire_out_6[1][1], wire_out_6[1][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_24 (
    .clk(clk),
-   .in({reg_line[0][25], reg_line[0][24]}),
-   .out({wire_out[24][1], wire_out[24][0]})
+   .rst(rst),
+   .in({in_line[25], in_line[24]}),
+   .out({wire_out_2[12][1], wire_out_2[12][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_25 (
    .clk(clk),
-   .in({reg_line[1][26], reg_line[1][25]}),
-   .out({wire_out[25][1], wire_out[25][0]})
+   .rst(rst),
+   .in({wire_out_2[13][0], wire_out_2[12][1]}),
+   .out({wire_out_2[22][1], wire_out_2[22][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_26 (
    .clk(clk),
-   .in({reg_line[0][27], reg_line[0][26]}),
-   .out({wire_out[26][1], wire_out[26][0]})
+   .rst(rst),
+   .in({in_line[27], in_line[26]}),
+   .out({wire_out_2[13][1], wire_out_2[13][0]})
 );
 
-fan_adder #(
+fan_adder_4to4 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(4)
+   .SYMMETRY(0)
 ) u_fan_adder_27 (
    .clk(clk),
-   .in({reg_line[2][29], reg_line[2][28], reg_line[2][27], reg_line[2][26]}),
-   .out({wire_out[27][1], wire_out[27][0]})
+   .rst(rst),
+   .in({wire_out_2[23][0], reg_lv2[14], reg_lv2[13], wire_out_2[22][1]}),
+   .out({wire_out_4[3][3], wire_out_4[3][2], wire_out_4[3][1], wire_out_4[3][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(1)
 ) u_fan_adder_28 (
    .clk(clk),
-   .in({reg_line[0][29], reg_line[0][28]}),
-   .out({wire_out[28][1], wire_out[28][0]})
+   .rst(rst),
+   .in({in_line[29], in_line[28]}),
+   .out({wire_out_2[14][1], wire_out_2[14][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_29 (
    .clk(clk),
-   .in({reg_line[1][30], reg_line[1][29]}),
-   .out({wire_out[29][1], wire_out[29][0]})
+   .rst(rst),
+   .in({wire_out_2[15][0], wire_out_2[14][1]}),
+   .out({wire_out_2[23][1], wire_out_2[23][0]})
 );
 
-fan_adder #(
+fan_adder_2to2 #(
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
-   .NUM_IN(2)
+   .SYMMETRY(0)
 ) u_fan_adder_30 (
    .clk(clk),
-   .in({reg_line[0][31], reg_line[0][30]}),
-   .out({wire_out[30][1], wire_out[30][0]})
+   .rst(rst),
+   .in({in_line[31], in_line[30]}),
+   .out({wire_out_2[15][1], wire_out_2[15][0]})
 );
 
 endmodule
