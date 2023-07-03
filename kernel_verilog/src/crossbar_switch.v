@@ -10,7 +10,7 @@ module crossbar_switch #(
     output reg [2*DW_DATA-1:0] out // 0 is right output, 1 is down output
 );
 
-    always @(*) begin // TODO: bug for clk
+    always @(*) begin 
         if (reset) begin
             out <= 0;
         end
