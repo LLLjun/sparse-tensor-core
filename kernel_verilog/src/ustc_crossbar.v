@@ -1,20 +1,42 @@
+`timescale 1ns / 1ps
+
 module ustc_crossbar #(
     parameter N = 8,
     parameter DW_DATA = 32,
-    parameter NUM_PER_LINE = 4,
+    parameter DW_IDX = 4,
+    parameter NUM_PER_LINE = 1,
     parameter DW_LINE = DW_DATA * NUM_PER_LINE
 ) (
     input clk,
     input reset,
-    input [N*N-1:0] ctrl,
     input [N*DW_LINE-1:0] in,
+    input [N*DW_IDX-1:0] idx,
     output reg [N*DW_LINE-1:0] out
 );
 
     reg [DW_LINE-1:0] reg_in [N-1:0][N-1:0][1:0];
     wire [DW_LINE-1:0] wire_out [N-1:0][N-1:0][1:0];
+    reg reg_ctrl[N-1:0][N-1:0];
+    wire [DW_IDX-1:0] wire_idx [N-1:0];
+    integer i, j;
+    genvar gi, gj;
 
-    integer i,j;
+    generate
+        for (gi=0; gi<N; gi=gi+1) begin
+            assign wire_idx[gi] = idx[gi*DW_IDX +: DW_IDX];
+        end
+    endgenerate
+
+    always @(posedge clk) begin
+        for (i=0; i<N; i=i+1) begin
+            for (j=0; j<N; j=j+1) begin
+                if (i == wire_idx[j])
+                    reg_ctrl[i][j] = 1;
+                else 
+                    reg_ctrl[i][j] = 0;
+            end
+        end
+    end
 
     // set connection
     always @(*) begin
@@ -44,7 +66,6 @@ module ustc_crossbar #(
         end
     end
 
-    genvar gi, gj;
     generate
         for (gi=0; gi<N; gi=gi+1) begin: gen_row
             for (gj=0; gj<N; gj=gj+1) begin: gen_sw
@@ -53,7 +74,7 @@ module ustc_crossbar #(
                 ) u_x_sw (
                     .clk(clk),
                     .reset(reset),
-                    .ctrl(ctrl[gi*N+gj]),
+                    .ctrl(reg_ctrl[gi][gj]),
                     .in({reg_in[gi][gj][1], reg_in[gi][gj][0]}),
                     .out({wire_out[gi][gj][1], wire_out[gi][gj][0]})
                 );

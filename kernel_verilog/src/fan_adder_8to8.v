@@ -36,7 +36,7 @@ module fan_adder_8to8 #(
         end
     endgenerate
 
-    assign add_left  = ({DW_LINE{in_line[0][DW_LINE-1]}}&in_line[0]) | ({DW_LINE{in_line[1][DW_LINE-1]}}&in_line[1]) | ({DW_LINE{in_line[2][DW_LINE-1]}}&in_line[2]) | ({DW_LINE{in_line[4][DW_LINE-1]}}&in_line[4]);
+    assign add_left  = ({DW_LINE{in_line[0][DW_LINE-1]}}&in_line[0]) | ({DW_LINE{in_line[1][DW_LINE-1]}}&in_line[1]) | ({DW_LINE{in_line[2][DW_LINE-1]}}&in_line[2]) | ({DW_LINE{in_line[3][DW_LINE-1]}}&in_line[3]);
     assign add_right = ({DW_LINE{in_line[4][DW_LINE-1]}}&in_line[4]) | ({DW_LINE{in_line[5][DW_LINE-1]}}&in_line[5]) | ({DW_LINE{in_line[6][DW_LINE-1]}}&in_line[6]) | ({DW_LINE{in_line[7][DW_LINE-1]}}&in_line[7]);
     assign add_left_data = add_left[0 +:DW_DATA];
     assign add_left_row = add_left[DW_DATA +:DW_ROW];

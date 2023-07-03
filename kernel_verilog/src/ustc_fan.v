@@ -6,7 +6,7 @@ module ustc_fan #(
     parameter N_LEVELS = 5,
     // for data width
     parameter DW_DATA = 32,
-    parameter DW_ROW = 5,
+    parameter DW_ROW = 4,
     parameter DW_CTRL = 4,
     parameter DW_LINE = DW_DATA + DW_ROW + DW_CTRL
 ) (

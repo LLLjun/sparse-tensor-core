@@ -2,72 +2,59 @@
 
 module ustc_array #(
     parameter N_UNIT = 32,
-    parameter N_ADDERS = N_UNIT - 1,
-    parameter N_BUSLINE = 2*N_ADDERS,
-    parameter TILE_K = 8,
-    parameter DW_DATA = 32,
-    parameter N_LEVELS = 2*$clog2(N_UNIT)-1
+    parameter NUM_XBAR = 4,
+    parameter N_XBAR_IN = 8,
+    parameter DW_DATA = 8,
+    parameter DW_ROW = 4,
+    parameter DW_CTRL = 4,
+    parameter DW_IDX = 4,
+    parameter DW_OUT = 16
 ) (
     input clk,
     input reset,
-    input enable,
     // input 
-    input signed [N_UNIT*DW_DATA-1:0] in_a,
-    input signed [TILE_K*DW_DATA-1:0] in_b,
-    input [1:0] in_valid,
-    // control signals
-    input [N_LEVELS*N_UNIT-1:0] route_signals,
-    input [N_ADDERS-1:0] add_en,
-    input [N_ADDERS-1:0] bypass_en,
-    input [6*N_ADDERS-1:0] sel,
-    input [2*N_UNIT-1:0] edge_tag_in,
+    input [N_UNIT*DW_DATA-1:0] in_a,
+    input [N_XBAR_IN*DW_DATA-1:0] in_b,
+    input [N_UNIT*DW_IDX-1:0] in_a_col,
+    input [N_UNIT*DW_ROW-1:0] in_a_row,
+    input [N_UNIT*DW_CTRL-1:0] in_a_ctrl,
     // output
-    output signed [N_BUSLINE*DW_DATA-1:0] out_bus,
-    output [N_BUSLINE-1:0] out_valid
+    output [N_UNIT*DW_OUT-1:0] out
 );
+    wire [N_UNIT*DW_DATA-1:0] wire_in_a, wire_in_b, wire_dp_out;
+    reg [N_UNIT*DW_OUT-1:0] reg_fan_in;
+    wire wire_in_a_valid;
 
-    wire [N_UNIT*DW_DATA-1:0] wire_dn_out;
-    reg [N_UNIT*DW_DATA-1:0] reg_in_a, reg_in_b, reg_in_dn;
-    wire [N_UNIT*DW_DATA-1:0] wire_dp_out;
-
-    always @(posedge clk) begin
-        if (reset) begin
-            reg_in_a <= 0;
-            reg_in_b <= 0;
-            reg_in_dn <= 0;
-        end
-        else if (enable) begin
-            reg_in_a <= wire_dn_out;
-            reg_in_b <= wire_dn_out;
-            if (in_valid[1]) begin
-                reg_in_dn <= in_a;
-            end
-            else begin
-                reg_in_dn <= {2{in_b}};
-            end
-        end
-        else begin
-            reg_in_dn <= 0;
-        end
-    end
-
-    // always @(*) begin
-    //     reg_in_a <= wire_dn_out;
-    //     reg_in_b <= wire_dn_out;
-    //     //reg_in_dn <= 0;
-    // end
-    
-    ustc_benes #(
-        .N(N_UNIT),
-        .DW_DATA(DW_DATA)
-    ) u_dn_benes (
+    // in a late for 1 cycle
+    delay_unit #(
+        .DW_DATA(N_UNIT*DW_DATA),
+        .W_SHIFT(1)
+    ) u_delay_in_a (
         .clk(clk),
         .reset(reset),
-        .set_en(enable),
-        .route_en(enable),
-        .route_signals(route_signals),
-        .in(reg_in_dn),
-        .out(wire_dn_out)
+        .enable(1),
+        .in(in_a),
+        .out_valid(wire_in_a_valid),
+        .out(wire_in_a)
+    );
+
+    integer i;
+    always @(posedge clk) begin
+        for (i=0; i<N_UNIT; i=i+1) begin
+            reg_fan_in[i*DW_OUT +: DW_DATA] <= wire_dp_out[i*DW_DATA +:DW_DATA];
+            reg_fan_in[i*DW_OUT+DW_DATA +: DW_ROW] <= in_a_row[i*DW_ROW +:DW_ROW];
+            reg_fan_in[i*DW_OUT+DW_DATA+DW_ROW +: DW_CTRL] <= in_a_ctrl[i*DW_CTRL +:DW_CTRL];
+        end
+    end
+    
+    ustc_dn #(
+        .DW_DATA(DW_DATA)
+    ) u_ustc_dn (
+        .clk(clk),
+        .reset(reset),
+        .in(in_b),
+        .idx(in_a_col),
+        .out(wire_in_b)
     );
 
     multiplier_array #(
@@ -76,24 +63,20 @@ module ustc_array #(
     ) u_dp_group (
         .clk(clk),
         .reset(reset),
-        .enable(enable),
-        .in_a(reg_in_a),
-        .in_b(reg_in_b),
-        .in_valid(in_valid),
+        .enable(1),
+        .in_a(wire_in_a),
+        .in_b(wire_in_b),
+        .in_valid(2'b11),
         .out(wire_dp_out)
     );
 
     ustc_fan #(
-        .N(N_UNIT),
         .DW_DATA(DW_DATA)
-    ) u_fan_tree (
-        .add_en(add_en),
-        .bypass_en(bypass_en),
-        .sel(sel),
-        .in(wire_dp_out),
-        .edge_tag_in(edge_tag_in),
-        .out_valid(out_valid),
-        .out(out_bus)
+    ) u_ustc_fan (
+        .clk(clk),
+        .rst(rst),
+        .in(reg_fan_in),
+        .out(out)
     );
 
 endmodule
