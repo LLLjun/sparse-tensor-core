@@ -74,7 +74,7 @@ module ustc_array #(
         .DW_DATA(DW_DATA)
     ) u_ustc_fan (
         .clk(clk),
-        .rst(rst),
+        .rst(reset),
         .in(reg_fan_in),
         .out(out)
     );

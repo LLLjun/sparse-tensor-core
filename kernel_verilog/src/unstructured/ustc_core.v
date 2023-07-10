@@ -130,7 +130,9 @@ ustc_array u_ustc_array (
     .out(wire_compute_result)
 );
 
-ustc_psum u_ustc_psum(
+ustc_psum #(
+    .DW_DATA(DW_DATA)
+) u_ustc_psum(
     .clk(clk),
     .rst(reset),
     .col(col_n),

@@ -7,7 +7,7 @@ module ustc_psum #(
     parameter tileK = 8,
     parameter tileN = 1,
     parameter NUM_IN = 32,
-    parameter DW_DATA = 32,
+    parameter DW_DATA = 8,
     parameter DW_ROW = 4,
     parameter DW_COL = 4,
     parameter DW_CTRL = 4,
@@ -52,8 +52,6 @@ module ustc_psum #(
                     reg_cache[i][j] <= 0;
                 end
             end
-            count <= 0;
-            state <= INPUT;
         end
         else if (state == INPUT) begin // sum
             for (i=0; i<NUM_IN; i=i+1) begin
@@ -70,6 +68,10 @@ module ustc_psum #(
     end
 
     always @(posedge clk) begin
+        if (rst) begin
+            count <= 0;
+            next_state <= INPUT;
+        end
         state <= next_state;
         if (state==INPUT) begin
             reg_out_valid <= 0;
@@ -92,5 +94,11 @@ module ustc_psum #(
         end
     end
 
-
+    assign out_valid = reg_out_valid;
+    generate
+        for (gi=0; gi<NUM_OUT; gi=gi+1) begin
+            assign out[gi*DW_DATA +:DW_DATA] = reg_out[gi];
+        end
+    endgenerate
+    
 endmodule

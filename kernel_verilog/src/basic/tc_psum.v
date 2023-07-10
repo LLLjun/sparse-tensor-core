@@ -53,8 +53,6 @@ module tc_psum #(
             for (i=0; i<NUM_OUT; i=i+1) begin
                 reg_out[i] <= 0;
             end
-            reg_out_valid <= 0;
-            count <= 0;
         end
         else if (state == INPUT) begin // sum
             for (i=0; i<TILE_M; i=i+1) begin
@@ -72,6 +70,8 @@ module tc_psum #(
         state <= next_state;
         if (rst) begin
             next_state <= IDLE;
+            count <= 0;
+            reg_out_valid <= 0;
         end
         else if (state==IDLE) begin
             if (input_en)
