@@ -2,20 +2,21 @@
 
 // dealy exists!
 module multiply_unit #(
-    parameter DW_DATA = 8
+    parameter DW_IN = 8,
+    parameter DW_OUT = 2*DW_IN
 ) (
     input clk,
     input reset,
     input enable,
-    input signed [DW_DATA-1:0] in_a,
-    input signed [DW_DATA-1:0] in_b,
+    input signed [DW_IN-1:0] in_a,
+    input signed [DW_IN-1:0] in_b,
     input [1:0] in_valid,
-    output signed [DW_DATA-1:0] out
+    output signed [DW_OUT-1:0] out
 );
 
-    reg signed [DW_DATA-1:0] reg_multiplier_ia;
-    reg signed [DW_DATA-1:0] reg_multiplier_ib;
-    reg signed [DW_DATA-1:0] reg_multiplier_o;
+    reg signed [DW_IN-1:0] reg_multiplier_ia;
+    reg signed [DW_IN-1:0] reg_multiplier_ib;
+    reg signed [DW_OUT-1:0] reg_multiplier_o;
 
     always @(posedge clk) begin
         if (reset) begin

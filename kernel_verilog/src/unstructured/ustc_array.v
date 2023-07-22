@@ -1,14 +1,20 @@
 `timescale 1ns / 1ps
 
 module ustc_array #(
-    parameter N_UNIT = 32,
-    parameter NUM_XBAR = 4,
-    parameter N_XBAR_IN = 8,
-    parameter DW_DATA = 8,
+    parameter TILE_M = 4,
+    parameter TILE_K = 8,
+    parameter TILE_N = 4,
+    parameter N_UNIT = TILE_M * TILE_K * TILE_N,
+    parameter NUM_XBAR = TILE_M,
+    parameter N_XBAR_IN = TILE_K,
+    parameter N_STACK = TILE_N,
+    parameter DW_IN = 8,
     parameter DW_ROW = 4,
     parameter DW_CTRL = 4,
     parameter DW_IDX = 4,
-    parameter DW_OUT = 16
+    parameter DW_
+    parameter DW_LINE = 
+    parameter DW_OUT = 32,
 ) (
     input clk,
     input reset,
