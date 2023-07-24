@@ -45,8 +45,8 @@ endgenerate
 initial begin
     clk = 1;
     reset = 1;
-    $readmemh("D:/Project/Verilog/tensorcore/new ustc/sparse-tensor-core/in_a_dense.txt",in_a);
-    $readmemh("D:/Project/Verilog/tensorcore/new ustc/sparse-tensor-core/in_b.txt",in_b);
+    $readmemh("C:/Project/SparseTensorCore/sparse-tensor-core/in_a_dense.txt",in_a);
+    $readmemh("C:/Project/SparseTensorCore/sparse-tensor-core/in_b.txt",in_b);
     load_en = 0;
     compute_en = 0;
     #10

@@ -4,39 +4,45 @@ module tc_core #(
     parameter M = 16,
     parameter N = 16,
     parameter K = 16,
-    parameter tileM = 4,
-    parameter tileN = 1,
-    parameter tileK = 8,
-    parameter iterM = 4,
-    parameter iterN = 16,
-    parameter iterK = 2,
-    parameter N_UNIT = 32,
-    parameter DW_DATA = 8,
-    parameter DW_POS = 4
+    parameter TILE_M = 4,
+    parameter TILE_K = 8,
+    parameter TILE_N = 4,
+    parameter iterM = M / TILE_M,
+    parameter iterN = N / TILE_N,
+    parameter iterK = K / TILE_K,
+    parameter N_UNIT = TILE_M * TILE_K * TILE_N,
+    parameter DW_IN = 8,
+    parameter DW_POS = 4,
+    parameter DW_OUT = 32
 ) (
     input clk,
     input reset,
     input load_en,
     input compute_en,
-    input [M*K*DW_DATA-1:0] in_a,
-    input [K*N*DW_DATA-1:0] in_b,
-    output [N*DW_DATA-1:0] out
+    input [M*K*DW_IN-1:0] in_a,
+    input [K*N*DW_IN-1:0] in_b,
+    output [M*N*DW_OUT-1:0] out
 );
 
     parameter IDLE = 2'd0;
     parameter LOAD = 2'd1;
     parameter COMPUTE = 2'd2;
+    integer i, j;
+    genvar gi, gj;
     
     reg [1:0] state, next_state;
 
-    reg [M*K*DW_DATA-1:0] reg_a; //[M-1:0][K-1:0];
-    reg [K*N*DW_DATA-1:0] reg_b; //[K-1:0][N-1:0];
+    reg [DW_IN-1:0] reg_a [M-1:0][K-1:0];
+    reg [DW_IN-1:0] reg_b [K-1:0][N-1:0];
+    reg [DW_IN-1:0] reg_tile_a [TILE_M-1:0][TILE_K-1:0];
+    reg [DW_IN-1:0] reg_tile_b [TILE_K-1:0][TILE_N-1:0];
     reg [3:0]  ptr_m, ptr_n, ptr_k;
-    wire [3:0] col_n, row_m;
-    reg [N_UNIT*DW_DATA-1:0] reg_tile_a;
-    reg [tileK*tileN*DW_DATA-1:0] reg_tile_b;
-    wire [tileM*DW_DATA-1:0] wire_compute_result;
     reg out_en, input_en;
+
+    wire [TILE_M*TILE_K*DW_IN-1:0] wire_tile_a;
+    wire [TILE_N*TILE_K*DW_IN-1:0] wire_tile_b;
+    wire [TILE_M*TILE_N*DW_OUT-1:0] wire_compute_result;
+    wire [3:0] col_n, row_m;
     wire out_valid, col_valid, row_valid, psum_input_en, psum_input_en_valid;
 
     // state transfer and control
@@ -54,59 +60,74 @@ module tc_core #(
                 input_en <= 1;
             end
             if (state==LOAD) begin
-                reg_a <= in_a;
-                reg_b <= in_b;
+                for (i=0; i<M; i=i+1) begin
+                    for (j=0; j<K; j=j+1) begin
+                        reg_a[i][j] <= in_a[(i*K+j)*DW_IN +:DW_IN];
+                    end
+                end
+                for (i=0; i<K; i=i+1) begin
+                    for (j=0; j<N; j=j+1) begin
+                        reg_b[i][j] <= in_b[(i*N+j)*DW_IN +:DW_IN];
+                    end
+                end
                 ptr_m <= 0;
                 ptr_n <= 0;
                 ptr_k <= 0;
             end
             else if (state==COMPUTE) begin
-                if (ptr_n == 4'd15) begin
-                    if (ptr_m == 4'd12) begin
-                        if (ptr_k == 4'd1)
+                if (ptr_m == 16 - TILE_M) begin
+                    if (ptr_k == 16 - TILE_K) begin
+                        if (ptr_n == 16 - TILE_N) begin
                             next_state <= IDLE;
+                        end
                         else begin
                             ptr_m <= 0;
-                            ptr_n <= 0;
-                            ptr_k <= ptr_k+1;
+                            ptr_k <= 0;
+                            ptr_n <= ptr_n+TILE_N;
                         end
                     end
                     else begin
-                        ptr_m <= ptr_m + 4;
-                        ptr_n <= 4'd0;
+                        ptr_m <= 0;
+                        ptr_k <= ptr_k + TILE_K;
                     end
                 end
                 else begin
-                    ptr_n <= ptr_n + 1;
+                    ptr_m <= ptr_m + TILE_M;
                 end
             end
         end
     end
 
-
-    integer i,j;
     // select tile
     always @(posedge clk) begin: a1
-        for (i=0; i<tileM; i=i+1) begin
-            for (j=0; j<tileK; j=j+1) begin
-                reg_tile_a[(i*tileK+j)*DW_DATA +:DW_DATA] <= reg_a[((ptr_m+i)*K + ptr_k*8+j)*DW_DATA +:DW_DATA];
+        for (i=0; i<TILE_M; i=i+1) begin
+            for (j=0; j<TILE_K; j=j+1) begin
+                reg_tile_a[i][j] <= reg_a[ptr_m+i][ptr_k+j];
             end
         end
-        reg_tile_b <= reg_b[(ptr_n*K+ptr_k*8)*DW_DATA +:tileK*tileN*DW_DATA];
+        for (i=0; i<TILE_K; i=i+1) begin
+            for (j=0; j<TILE_N; j=j+1) begin
+                reg_tile_b[i][j] <= reg_b[ptr_k+i][ptr_n+j];
+            end
+        end
     end
 
     always @(posedge clk) begin
         state <= next_state;
     end
 
-    // integer i;
-    // // select tile
-    // always @(posedge clk) begin
-    //     for (i=0; i<N_UNIT; i=i+1) begin
-    //         reg_tile_a[i*DW_DATA +:DW_DATA] <= reg_a[ptr_m*N_UNIT*DW_DATA + i*DW_DATA +:DW_DATA];
-    //     end
-    //     reg_tile_b <= reg_b[(ptr_n*K+ptr_k*8)*DW_DATA +:tileK*tileN*DW_DATA];
-    // end
+    generate
+        for (gi=0; gi<TILE_M; gi=gi+1) begin
+            for (gj=0; gj<TILE_K; gj=gj+1) begin
+                assign wire_tile_a[(gi*TILE_K+gj)*DW_IN +:DW_IN] = reg_tile_a[gi][gj];
+            end
+        end
+        for (gi=0; gi<TILE_K; gi=gi+1) begin
+            for (gj=0; gj<TILE_N; gj=gj+1) begin
+                assign wire_tile_b[(gi*TILE_N+gj)*DW_IN +:DW_IN] = reg_tile_b[gi][gj];
+            end
+        end
+    endgenerate
 
 delay_unit #(
     .DW_DATA(DW_POS),
@@ -145,13 +166,13 @@ delay_unit #(
 tc_array u_tc_array (
     .clk(clk),
     .reset(reset),
-    .in_a(reg_tile_a),
-    .in_b(reg_tile_b),
+    .in_a(wire_tile_a),
+    .in_b(wire_tile_b),
     .out(wire_compute_result)
 );
 
 tc_psum #(
-    .DW_DATA(DW_DATA)
+    .DW_DATA(DW_OUT)
 ) u_tc_psum(
     .clk(clk),
     .rst(reset),
