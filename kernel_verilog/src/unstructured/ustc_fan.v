@@ -5,10 +5,11 @@ module ustc_fan #(
     parameter NUM_IN = 32,
     parameter N_LEVELS = 5,
     // for data width
-    parameter DW_DATA = 8,
+    parameter N_STACK = 4,
+    parameter DW_DATA = 32,
     parameter DW_ROW = 4,
     parameter DW_CTRL = 4,
-    parameter DW_LINE = DW_DATA + DW_ROW + DW_CTRL
+    parameter DW_LINE = N_STACK*DW_DATA + DW_ROW + DW_CTRL
 ) (
     input clk,
     input rst,
@@ -163,6 +164,7 @@ module ustc_fan #(
     assign out[31*DW_LINE +:DW_LINE] = reg_lv5[23];
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -175,6 +177,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -187,6 +190,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -199,6 +203,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_4to4 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -211,6 +216,7 @@ fan_adder_4to4 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -223,6 +229,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -235,6 +242,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -247,6 +255,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_6to6 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -259,6 +268,7 @@ fan_adder_6to6 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -271,6 +281,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -283,6 +294,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -295,6 +307,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_4to4 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -307,6 +320,7 @@ fan_adder_4to4 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -319,6 +333,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -331,6 +346,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -343,6 +359,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_8to8 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -355,6 +372,7 @@ fan_adder_8to8 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -367,6 +385,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -379,6 +398,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -391,6 +411,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_4to4 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -403,6 +424,7 @@ fan_adder_4to4 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -415,6 +437,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -427,6 +450,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -439,6 +463,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_6to6 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -451,6 +476,7 @@ fan_adder_6to6 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -463,6 +489,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -475,6 +502,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -487,6 +515,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_4to4 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -499,6 +528,7 @@ fan_adder_4to4 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -511,6 +541,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),
@@ -523,6 +554,7 @@ fan_adder_2to2 #(
 );
 
 fan_adder_2to2 #(
+   .N_STACK(N_STACK),
    .DW_DATA(DW_DATA),
    .DW_ROW(DW_ROW),
    .DW_CTRL(DW_CTRL),

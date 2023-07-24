@@ -36,7 +36,6 @@ module tc_array #(
         .TILE_M(TILE_M),
         .TILE_K(TILE_K),
         .TILE_N(TILE_N),
-        .N_UNIT(N_UNIT),
         .DW_IN(DW_IN)
     ) u_dp_group (
         .clk(clk),

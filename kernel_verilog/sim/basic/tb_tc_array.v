@@ -10,7 +10,7 @@ reg clk;
 reg reset;
 // input 
 reg [N_UNIT*DW_DATA-1:0] in_a;
-reg [TILE_K*DW_DATA-1:0] in_b;
+reg [N_UNIT*DW_DATA-1:0] in_b;
 // output
 wire [TILE_M*DW_DATA-1:0] out;
 
@@ -23,7 +23,10 @@ initial begin
             8'd7, 8'd1, 8'd5, 8'd0, 8'd1, 8'd2, 8'd3, 8'd4, 
             8'd6, 8'd7, 8'd7, 8'd5, 8'd0, 8'd1, 8'd2, 8'd3, 
             8'd5, 8'd6, 8'd0, 8'd1, 8'd3, 8'd4, 8'd6, 8'd7};
-    in_b = {8'd7, 8'd6, 8'd5, 8'd4, 8'd3, 8'd2, 8'd1, 8'd0};
+    in_b = {8'd7, 8'd6, 8'd5, 8'd4, 8'd3, 8'd2, 8'd1, 8'd0,
+            8'd7, 8'd6, 8'd5, 8'd4, 8'd3, 8'd2, 8'd1, 8'd0,
+            8'd7, 8'd6, 8'd5, 8'd4, 8'd3, 8'd2, 8'd1, 8'd0,
+            8'd7, 8'd6, 8'd5, 8'd4, 8'd3, 8'd2, 8'd1, 8'd0};
     #10
     reset = 0;
     #10
