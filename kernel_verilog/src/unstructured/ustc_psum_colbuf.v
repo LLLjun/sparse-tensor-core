@@ -19,7 +19,7 @@ module ustc_psum_colbuf #(
     input                      output_en,
     output                     out_valid,
     output [DW_OUT-1:0]        out
-)
+);
 
     integer i, j;
     genvar gi;
