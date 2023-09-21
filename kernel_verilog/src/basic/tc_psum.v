@@ -1,16 +1,29 @@
 `timescale 1ns / 1ps
 
+////////////////////////////////////////////////////////////
+// 文件名：tc_psum.v
+// 模块功能描述：模块包含一个register file，用于储存矩阵乘法的结果（一个M*N的矩阵），以及将规约网络的输出结果累加到对应数值上
+//             即：保存一个M*N的矩阵，能够根据输入的地址信息（行首的位置和列首的位置），读取某些位置的数据（一个规整的块），
+//             并将输入数据与其相加，将结果写回到原位置上
+// 具体行为描述：rst拉高时，所有register file全部置零
+//             共有三个register file：
+//             * 一个M*N的reg_cache，用于存放矩阵
+//             * 一个M*TILE_N的reg_add，存放输出矩阵的部分列，也就是要累加的数据，具体来说是[col, col+TILE_N-1]这部分列，
+//             累加后的数据写到这里（具体来说是[row, row+TILE_M-1]这部分行），然后统一写回到reg_cache（这样设计是为了避免
+//             反复读取较大的reg_cache，用多余的reg降低开销，且数据流决定了会一行一行完成部分列，再一行一行完成下一部分列）
+//             * 一个reg_col，用于存储上个周期的col信号，当reg_col与col不一致时，说明reg_add要写回reg_cache，并更新reg_add
+////////////////////////////////////////////////////////////
+
 module tc_psum #(
-    parameter M = 16,
-    parameter N = 16,
-    parameter TILE_M = 4,
-    parameter TILE_N = 4,
-    parameter NUM_IN = TILE_M * TILE_N,
-    parameter DW_DATA = 32,
-    parameter DW_POS = 4,
-    parameter NUM_OUT = M * N,
-    parameter T_OUT = M,
-    parameter DW_OUT = NUM_OUT*DW_DATA
+    parameter M = 16,                   // 输出矩阵的行数
+    parameter N = 16,                   // 输出矩阵的列数
+    parameter TILE_M = 4,               // 一次累加操作会涉及到的行数（连续的）
+    parameter TILE_N = 4,               // 一次累加操作会涉及到的列数（连续的）
+    parameter NUM_IN = TILE_M * TILE_N, // 一次累加操作会涉及到的操作数
+    parameter DW_DATA = 32,             // 数据位宽
+    parameter DW_POS = 4,               // 位置信息的位宽
+    parameter NUM_OUT = M * N,          // 输出大小（这里设置是一次输出整个矩阵）
+    parameter DW_OUT = NUM_OUT*DW_DATA  // 输出位宽
 ) (
     input clk,
     input rst,

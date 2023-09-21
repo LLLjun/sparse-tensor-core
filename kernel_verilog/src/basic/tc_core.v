@@ -1,9 +1,9 @@
 `timescale 1ns / 1ps
 
 module tc_core #(
-    parameter M = 16,
-    parameter N = 16,
-    parameter K = 16,
+    parameter M = 32,
+    parameter N = 32,
+    parameter K = 32,
     parameter TILE_M = 4,
     parameter TILE_K = 8,
     parameter TILE_N = 4,
@@ -75,9 +75,9 @@ module tc_core #(
                 ptr_k <= 0;
             end
             else if (state==COMPUTE) begin
-                if (ptr_m == 16 - TILE_M) begin
-                    if (ptr_k == 16 - TILE_K) begin
-                        if (ptr_n == 16 - TILE_N) begin
+                if (ptr_m == M - TILE_M) begin
+                    if (ptr_k == K - TILE_K) begin
+                        if (ptr_n == N - TILE_N) begin
                             next_state <= IDLE;
                         end
                         else begin
@@ -172,6 +172,10 @@ tc_array u_tc_array (
 );
 
 tc_psum #(
+    .M(M),
+    .N(N),
+    .TILE_M(TILE_M),
+    .TILE_N(TILE_N),
     .DW_DATA(DW_OUT)
 ) u_tc_psum(
     .clk(clk),
